@@ -56,7 +56,7 @@ driver.get("https://www.facebook.com/?locale=zh_TW")
 time.sleep(2)
 
 
-with open("facebook_cookies.pkl", "rb") as f:
+with open("cache.pkl", "rb") as f:
     cookies = pickle.load(f)
     for cookie in cookies:
         driver.add_cookie(cookie)
