@@ -97,6 +97,7 @@ class FacebookBot:
         options.add_argument("--disable-gpu")
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--force-device-scale-factor=0.8")
         if headless:
             options.add_argument("--headless")
 
@@ -281,7 +282,7 @@ class FacebookBot:
         
         try:
             textarea = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.XPATH, '//*[contains(@aria-label, "在想些什麼？")]')))
-            textarea.send_keys('我都笑翻了!!\nhttps://www.youtube.com/watch?v=L3V7nu5wqa4')
+            textarea.send_keys('這個也畫的太好了吧！\nhttps://youtu.be/qXRXxEGSB38?si=_7Ra6_z0CMTSwjf1')
             time.sleep(5)
         except Exception as e:
             print("找不到輸入位置:", e)
@@ -316,12 +317,6 @@ class FacebookBot:
             print("找不到分享按鍵:", e)
 
 
-        try:
-            textarea = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.XPATH, '//*[contains(@aria-label, "留個話吧⋯⋯")]')))
-            textarea.send_keys('這也太好笑了吧!!')
-        except Exception as e:
-            print("找不到輸入位置:", e)
-            return
 
 
         try:
@@ -341,13 +336,37 @@ class FacebookBot:
         except Exception as e:
             print("找不到目標社團:", e)
 
+
+        try:
+            textarea = WebDriverWait(driver, 30).until(EC.presence_of_all_elements_located((By.XPATH, '//*[contains(@aria-label, "留個話吧⋯⋯") or contains(@aria-label, "建立公開貼文……")]')))
+            textarea[-1].send_keys('真是太神了!!')
+        except Exception as e:
+            print("找不到輸入位置:", e)
+            return
+
+
+
         try:
             # 這裡的 XPath 可能會變動，建議用瀏覽器開發者工具確認最新的元素定位方式
             submit_buttons = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), "發佈")]')))
             submit_buttons.click()
-            time.sleep(1)
+            time.sleep(5)
         except Exception as e:
             print("找不到發佈按鍵:", e)
+
+        driver.get("https://www.facebook.com/groups/634305302709015")
+        time.sleep(3)
+
+        try:
+            # 這裡的 XPath 可能會變動，建議用瀏覽器開發者工具確認最新的元素定位方式
+            goodJob_buttons = WebDriverWait(driver, 30).until(EC.presence_of_all_elements_located((By.XPATH, '//*[contains(@aria-label, "讚")]')))
+            goodJob_buttons[0].click()
+            time.sleep(2)
+        except Exception as e:
+            print("找不到讚按鍵:", e)
+
+
+
 
 
     def public_or_unPublic(self):
@@ -382,6 +401,172 @@ class FacebookBot:
         except Exception as e:
             print("找不到完成按鍵:", e)
             return
+        
+
+    def modify_about(self):
+        companyLists = [
+            {"CN": "萌萌達有限公司", "jobtitle": "系統運維", "city": "台北市", "describe": "Linux 系統維護"},
+            {"CN": "火星人福氣金鑛股份有限公司", "jobtitle": "開發運維", "city": "台北市", "describe": "Linux 系統維護 && 系統自動化環境與腳本維護"},
+            {"CN": "榮信興業股份有限公司", "jobtitle": "爬蟲工程師 && 軟體自動化", "city": "台北市", "describe": "軟體自動化"},
+            {"CN": "家裡蹲有限公司", "jobtitle": "老闆兼撞鐘", "city": "新北市", "describe": "回家吃自己 && 耍廢追劇"},
+            ]
+        
+        school_lists = [
+            {"school_name": "國立聯合大學", "describe": "光電工程系"},
+            {"school_name": "國立台灣大學", "describe": "哲學系"},
+            {"school_name": "國立師範大學", "describe": "資訊工程系"},
+            {"school_name": "國立交通大學", "describe": "電機工程系"},
+            ]
+
+
+        myStatus_lists = ["單身", "一言難盡"]
+        
+        nowConpany = random.choice(companyLists)
+        nowSchool = random.choice(school_lists)
+        myStatus = random.choice(myStatus_lists)
+
+
+        driver = self.driver
+        driver.get("https://www.facebook.com/profile.php?id=61571946015172&sk=about_overview")
+
+
+        mdf_btn = WebDriverWait(driver, 30).until(EC.presence_of_all_elements_located((By.XPATH, '//*[contains(@aria-label, "選項")]')))
+        for mb in mdf_btn:
+            mb.click()
+            time.sleep(1)
+            page_source = driver.page_source
+
+            if '編輯任職公司' in page_source:
+
+                mdf_job_btn = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), "編輯任職公司")]')))
+                mdf_job_btn.click()
+                time.sleep(1)
+
+                
+                companyNameInput = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.XPATH, "//textarea[@aria-label='公司'] | //input[@aria-label='公司']")))
+                companyNameInput.send_keys(Keys.CONTROL + "a")  # 選取全部內容 (Mac 使用 COMMAND)
+                companyNameInput.send_keys(Keys.BACKSPACE)      # 刪除
+                companyNameInput.send_keys(nowConpany['CN'])
+
+                jobTitleInput = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.XPATH, "//textarea[@aria-label='職位'] | //input[@aria-label='職位']")))
+                jobTitleInput.send_keys(Keys.CONTROL + "a")  # 選取全部內容 (Mac 使用 COMMAND)
+                jobTitleInput.send_keys(Keys.BACKSPACE)      # 刪除
+                jobTitleInput.send_keys(nowConpany['jobtitle'])
+                jobTitleInput.send_keys(Keys.ENTER)
+
+                companyCityInput = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.XPATH, "//textarea[@aria-label='城市 / 鄉鎮'] | //input[@aria-label='城市 / 鄉鎮']")))
+                companyCityInput.send_keys(Keys.CONTROL + "a")  # 選取全部內容 (Mac 使用 COMMAND)
+                companyCityInput.send_keys(Keys.BACKSPACE)      # 刪除
+                companyCityInput.send_keys(nowConpany['city'])
+                companyCityInput.send_keys(Keys.ENTER)
+
+                jobDescribeInput = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.XPATH, "//textarea")))
+                jobDescribeInput.send_keys(Keys.CONTROL + "a")  # 選取全部內容 (Mac 使用 COMMAND)
+                jobDescribeInput.send_keys(Keys.BACKSPACE)      # 刪除
+                jobDescribeInput.send_keys(nowConpany['describe'])
+
+                save_job_btn = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.XPATH, '//*[contains(@aria-label, "儲存")]')))
+                save_job_btn.click()
+                page_source = driver.page_source
+                if '取消' in page_source:
+                    print('確認無法按')
+                    cancel_btn = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.XPATH, '//*[contains(@aria-label, "取消")]')))
+                    cancel_btn.click()
+                time.sleep(5)
+                break
+
+            else:
+                driver.find_element(By.TAG_NAME, 'body').click()
+                time.sleep(1)
+
+
+        mdf_btn = WebDriverWait(driver, 30).until(EC.presence_of_all_elements_located((By.XPATH, '//*[contains(@aria-label, "選項")]')))
+        for mb in mdf_btn:
+            mb.click()
+            time.sleep(1)
+            page_source = driver.page_source
+
+            if '編輯學校' in page_source:
+
+                mdf_school_btn = WebDriverWait(driver, 1).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), "編輯學校")]')))
+                mdf_school_btn.click()
+                time.sleep(1)
+
+                schoolNameInput = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.XPATH, "//textarea[@aria-label='學校'] | //input[@aria-label='學校']")))
+                schoolNameInput.send_keys(Keys.CONTROL + "a")  # 選取全部內容 (Mac 使用 COMMAND)
+                schoolNameInput.send_keys(Keys.BACKSPACE)      # 刪除
+                schoolNameInput.send_keys(nowSchool['school_name'])
+                schoolNameInput.send_keys(Keys.ENTER)
+
+                schoolDescribeInput = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.XPATH, "//textarea")))
+                schoolDescribeInput.send_keys(Keys.CONTROL + "a")  # 選取全部內容 (Mac 使用 COMMAND)
+                schoolDescribeInput.send_keys(Keys.BACKSPACE)      # 刪除
+                schoolDescribeInput.send_keys(nowSchool['describe'])
+
+                save_school_btn = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.XPATH, '//*[contains(@aria-label, "儲存")]')))
+                save_school_btn.click()
+                page_source = driver.page_source
+                if '取消' in page_source:
+                    print('確認無法按')
+                    cancel_btn = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.XPATH, '//*[contains(@aria-label, "取消")]')))
+                    cancel_btn.click()
+
+                time.sleep(5)
+                break
+            else:
+                driver.find_element(By.TAG_NAME, 'body').click()
+                time.sleep(1)
+
+ 
+
+        mdf_btn = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.XPATH, '//*[contains(@aria-label, "編輯感情狀況")]')))
+        mdf_btn.click()
+        time.sleep(1)
+
+        mdf_btn = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.XPATH, '//*[contains(@aria-label, "選擇你的感情狀況")]')))
+        mdf_btn.click()
+        time.sleep(1)
+
+        print(myStatus)
+        selectTargetStatus = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), "{}")]'.format(myStatus))))
+        selectTargetStatus.click()
+        time.sleep(2)
+
+
+        save_Status_btn = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.XPATH, '//*[contains(@aria-label, "儲存")]')))
+        save_Status_btn.click()
+        page_source = driver.page_source
+        if '取消' in page_source:
+            print('確認無法按')
+            cancel_btn = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.XPATH, '//*[contains(@aria-label, "取消")]')))
+            cancel_btn.click()
+        time.sleep(5)
+
+
+        
+        page_source = driver.page_source
+        if '編輯隱私設定。分享對象：只限本人。' in page_source:
+            myStatus = "所有人"
+
+        else:
+            myStatus = "只限本人"
+
+        driver.get("https://www.facebook.com/profile.php?id=61571946015172&sk=about_overview")
+        shareWho_btn = WebDriverWait(driver, 30).until(EC.presence_of_all_elements_located((By.XPATH, '//*[contains(@aria-label, "編輯隱私設定。分享對象")]')))
+        shareWho_btn[0].click()
+        time.sleep(1)
+
+        set_status_buttons = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.XPATH, '//*[contains(text(), "{}")]'.format(myStatus))))
+        set_status_buttons.click()
+        time.sleep(1)
+
+        submit_set_status = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.XPATH, '//*[contains(@aria-label, "儲存")]')))
+        submit_set_status.click()
+        time.sleep(3)
+
+
+
+
 
 # ---------------------------
 # 主程式：示範如何使用
@@ -414,6 +599,8 @@ if __name__ == "__main__":
     bot.newPost()
     time.sleep(5)
     bot.shareNewPost()
+    time.sleep(5)
+    bot.modify_about()
 
     # 4. 結束
     time.sleep(10000000)
