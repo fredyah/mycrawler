@@ -79,6 +79,30 @@ def get_random_introduction(current_path):
 
 
 
+
+def get_random_youtubeLink(current_path):
+    youtube_dir = os.path.join(current_path, 'youtubeLinks')
+    youtube_link_files = [f for f in os.listdir(youtube_dir) if f.lower().endswith(('csv'))]
+    if youtube_link_files:
+        for youtube_link_file in youtube_link_files:
+            myYoutube_links = os.path.join(youtube_dir, youtube_link_file)
+            with open(myYoutube_links, mode='r', newline='', encoding='utf-8') as file:
+                # 使用 csv.reader 讀取檔案內容
+                csv_reader = csv.reader(file)
+                
+                # 將檔案內容轉換為 list
+                data_list = list(csv_reader)
+
+            myYoutube_link = random.choice(data_list[1:])
+        
+    else:
+        introduction_files = None
+        print("❌ 沒有找到任何個人頭像圖片")
+
+    return myYoutube_link
+
+
+
 # ---------------------------
 # 類別：包含瀏覽器初始化，以及上傳大頭貼的流程
 # ---------------------------
@@ -268,7 +292,7 @@ class FacebookBot:
 
 
 
-    def newPost(self):
+    def newPost(self, YoutubeLinkAndLinkTitle):
         driver = self.driver
         driver.get("https://www.facebook.com/me/")
         try:
@@ -282,7 +306,7 @@ class FacebookBot:
         
         try:
             textarea = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.XPATH, '//*[contains(@aria-label, "在想些什麼？")]')))
-            textarea.send_keys('這個也畫的太好了吧！\nhttps://youtu.be/qXRXxEGSB38?si=_7Ra6_z0CMTSwjf1')
+            textarea.send_keys(YoutubeLinkAndLinkTitle)
             time.sleep(5)
         except Exception as e:
             print("找不到輸入位置:", e)
@@ -306,7 +330,7 @@ class FacebookBot:
 
 
 
-    def shareNewPost(self):
+    def shareNewPost(self, YoutubeLinkTitle):
         driver = self.driver
         try:
             # 這裡的 XPath 可能會變動，建議用瀏覽器開發者工具確認最新的元素定位方式
@@ -339,7 +363,7 @@ class FacebookBot:
 
         try:
             textarea = WebDriverWait(driver, 30).until(EC.presence_of_all_elements_located((By.XPATH, '//*[contains(@aria-label, "留個話吧⋯⋯") or contains(@aria-label, "建立公開貼文……")]')))
-            textarea[-1].send_keys('真是太神了!!')
+            textarea[-1].send_keys(YoutubeLinkTitle)
         except Exception as e:
             print("找不到輸入位置:", e)
             return
@@ -574,6 +598,7 @@ class FacebookBot:
 if __name__ == "__main__":
     # 1. 取得目前路徑，並組合圖片路徑
     current_path = os.getcwd()
+
     # 2. 下載並載入 cookies
     pkl_data = getPKL()
     bot = FacebookBot(headless=False)  # 如需無頭模式可設 headless=True
@@ -584,6 +609,7 @@ if __name__ == "__main__":
     myPicture = get_random_picture(current_path)
     myBackground = get_random_background(current_path)
     myInterDuction = get_random_introduction(current_path)[0]
+    myYoutubeLinkAndLinkTitle = get_random_youtubeLink(current_path)
 
 
 
@@ -596,9 +622,9 @@ if __name__ == "__main__":
     time.sleep(5)
     bot.updateMyIntroduction(myInterDuction)
     time.sleep(5)
-    bot.newPost()
+    bot.newPost('\n'.join(myYoutubeLinkAndLinkTitle))
     time.sleep(5)
-    bot.shareNewPost()
+    bot.shareNewPost(myYoutubeLinkAndLinkTitle[0])
     time.sleep(5)
     bot.modify_about()
 
