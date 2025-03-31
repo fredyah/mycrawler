@@ -616,18 +616,18 @@ if __name__ == "__main__":
 
 
     # 3. 建立 FacebookBot 實例，登入並上傳大頭貼
-    # bot.public_or_unPublic()
-    # time.sleep(5)
-    # bot.upload_picture(myPicture)
-    # time.sleep(5)
-    # bot.uploadBackground(myBackground)
-    # time.sleep(5)
-    # bot.updateMyIntroduction(myInterDuction)
-    # time.sleep(5)
-    # bot.newPost('\n'.join(myYoutubeLinkAndLinkTitle))
-    # time.sleep(5)
-    # bot.shareNewPost(myYoutubeLinkAndLinkTitle[0])
-    # time.sleep(5)
+    bot.public_or_unPublic()
+    time.sleep(5)
+    bot.upload_picture(myPicture)
+    time.sleep(5)
+    bot.uploadBackground(myBackground)
+    time.sleep(5)
+    bot.updateMyIntroduction(myInterDuction)
+    time.sleep(5)
+    bot.newPost('\n'.join(myYoutubeLinkAndLinkTitle))
+    time.sleep(5)
+    bot.shareNewPost(myYoutubeLinkAndLinkTitle[0])
+    time.sleep(5)
     bot.modify_about()
 
     # 4. 結束
