@@ -429,9 +429,9 @@ class FacebookBot:
 
     def modify_about(self):
         companyLists = [
-            {"CN": "萌萌達有限公司", "jobtitle": "系統運維", "city": "台北市", "describe": "Linux 系統維護"},
-            {"CN": "火星人福氣金鑛股份有限公司", "jobtitle": "開發運維", "city": "台北市", "describe": "Linux 系統維護 && 系統自動化環境與腳本維護"},
-            {"CN": "榮信興業股份有限公司", "jobtitle": "爬蟲工程師 && 軟體自動化", "city": "台北市", "describe": "軟體自動化"},
+            {"CN": "萌萌達有限公司", "jobtitle": "系統運維", "city": "內湖區", "describe": "Linux 系統維護"},
+            {"CN": "火星人福氣金鑛股份有限公司", "jobtitle": "開發運維", "city": "中山區", "describe": "Linux 系統維護 && 系統自動化環境與腳本維護"},
+            {"CN": "榮信興業股份有限公司", "jobtitle": "爬蟲工程師 && 軟體自動化", "city": "松山區", "describe": "軟體自動化"},
             {"CN": "家裡蹲有限公司", "jobtitle": "老闆兼撞鐘", "city": "新北市", "describe": "回家吃自己 && 耍廢追劇"},
             ]
         
@@ -483,7 +483,8 @@ class FacebookBot:
                 companyCityInput.send_keys(Keys.BACKSPACE)      # 刪除
                 companyCityInput.send_keys(nowConpany['city'])
                 selectCity_btn = WebDriverWait(driver, 30).until(EC.presence_of_all_elements_located((By.XPATH, '//*[contains(text(), "{}")]'.format(nowConpany['city']))))
-                selectCity_btn[1].click()
+                time.sleep(2)
+                selectCity_btn[-1].click()
                 time.sleep(3)
 
                 jobDescribeInput = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.XPATH, "//textarea")))
@@ -498,7 +499,7 @@ class FacebookBot:
                     print('確認無法按')
                     cancel_btn = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.XPATH, '//*[contains(@aria-label, "取消")]')))
                     cancel_btn.click()
-                time.sleep(5)
+                time.sleep(10)
                 break
 
             else:
@@ -537,7 +538,7 @@ class FacebookBot:
                     cancel_btn = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.XPATH, '//*[contains(@aria-label, "取消")]')))
                     cancel_btn.click()
 
-                time.sleep(5)
+                time.sleep(10)
                 break
             else:
                 driver.find_element(By.TAG_NAME, 'body').click()
@@ -566,7 +567,7 @@ class FacebookBot:
             print('確認無法按')
             cancel_btn = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.XPATH, '//*[contains(@aria-label, "取消")]')))
             cancel_btn.click()
-        time.sleep(5)
+        time.sleep(10)
 
 
         
