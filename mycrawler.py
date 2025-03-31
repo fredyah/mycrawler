@@ -482,7 +482,9 @@ class FacebookBot:
                 companyCityInput.send_keys(Keys.CONTROL + "a")  # 選取全部內容 (Mac 使用 COMMAND)
                 companyCityInput.send_keys(Keys.BACKSPACE)      # 刪除
                 companyCityInput.send_keys(nowConpany['city'])
-                companyCityInput.send_keys(Keys.ENTER)
+                selectCity_btn = WebDriverWait(driver, 30).until(EC.presence_of_all_elements_located((By.XPATH, '//*[contains(text(), "{}")]'.format(nowConpany['city']))))
+                selectCity_btn[-1].click()
+                time.sleep(1)
 
                 jobDescribeInput = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.XPATH, "//textarea")))
                 jobDescribeInput.send_keys(Keys.CONTROL + "a")  # 選取全部內容 (Mac 使用 COMMAND)
@@ -614,18 +616,18 @@ if __name__ == "__main__":
 
 
     # 3. 建立 FacebookBot 實例，登入並上傳大頭貼
-    bot.public_or_unPublic()
-    time.sleep(5)
-    bot.upload_picture(myPicture)
-    time.sleep(5)
-    bot.uploadBackground(myBackground)
-    time.sleep(5)
-    bot.updateMyIntroduction(myInterDuction)
-    time.sleep(5)
-    bot.newPost('\n'.join(myYoutubeLinkAndLinkTitle))
-    time.sleep(5)
-    bot.shareNewPost(myYoutubeLinkAndLinkTitle[0])
-    time.sleep(5)
+    # bot.public_or_unPublic()
+    # time.sleep(5)
+    # bot.upload_picture(myPicture)
+    # time.sleep(5)
+    # bot.uploadBackground(myBackground)
+    # time.sleep(5)
+    # bot.updateMyIntroduction(myInterDuction)
+    # time.sleep(5)
+    # bot.newPost('\n'.join(myYoutubeLinkAndLinkTitle))
+    # time.sleep(5)
+    # bot.shareNewPost(myYoutubeLinkAndLinkTitle[0])
+    # time.sleep(5)
     bot.modify_about()
 
     # 4. 結束
